@@ -1,1 +1,683 @@
-<h1>test</h1>
+{% load staticfiles %}
+<html>
+<head>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css"/>
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+ <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+ <link href="{% static 'q.css' %}" rel="stylesheet">
+<style>
+@font-face {
+    font-family: 'Blender'; 
+    src: url("{% static 'font/blender.ttf' %}");
+}
+.custom .leaflet-popup-tip,
+.custom .leaflet-popup-content-wrapper {
+    background:#6b0012;
+    color: #0ff;
+    font: 10pt "Blender", sans-serif; 
+}
+
+.Mycustom .leaflet-popup-tip,
+.Mycustom .leaflet-popup-content-wrapper {
+    background:#6b0012;
+    color: #43A047;
+    font: 10pt "Blender", sans-serif; 
+}
+
+.leaflet-control-attribution{
+    display: none !important;
+}
+
+.leaflet-left{
+    display: none !important;
+}
+.leaflet-bar, .leaflet-control-layers{
+    background-color:#00051E !important;
+}
+.leaflet-bar a, .leaflet-bar a:hover {
+    background-color: #0a87bd;
+    color:#fff;
+}
+
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #fff !important;
+	background: #fff;
+	}
+
+
+
+
+</style>
+        <style>
+#image-map {
+  width: 100%;
+  height: 300px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+</style>
+
+<title>Quantum Computing</title>
+<link rel="icon" href="{% static 'img/jp.png' %}" type="image/png" sizes="16x16">
+</head>
+
+
+
+<body>
+
+<div class="row">
+        
+        <div class="colz-half" >
+
+
+
+             <div id="image-map" style="height:75%;z-index:1;"></div>
+              <div class="location_search_div">
+                 <form id="tfnewsearch" method="get" action="">
+                    <input type="text" id="tftextinput" placeholder="Search Quantum Gates...">
+                </form>
+                  <div class="customLogo">
+                        <img src="{% static 'img/jp.png' %}" style="width:100%;height:100%;">
+                  </div>
+             </div>
+             <div id="bottommap" style="height:35%;z-index:1;">
+                  <div class="orgs" >
+                     <div class="orghead">
+                        Task
+                    </div>
+                    <div id="div1"></div>
+                 </div>
+                
+
+             </div>
+        </div>
+
+        <div class="colz-otherhalf" style="">
+         
+            <div class="topright" style="padding-left:10px;">
+             
+                 <div class="innerblender" style="padding-top:10px;">Quantum Computing</div>
+                
+                 
+                 <div class="getinfo">
+                     <div class="getinfohead">
+                        Get Info
+                    </div>
+                 </div>
+                 <div class="getstatus">
+                     <div class="getstatushead">
+                        Status
+                    </div>
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'tabs-1')" id="defaultOpen">COMPLETED</button>
+                        <button class="tablinks" onclick="openTab(event, 'tabs-2')">PROCESSING</button>
+                        <button class="tablinks" onclick="openTab(event, 'tabs-3')">QUEUE</button>
+                        <button class="tablinks" onclick="openTab(event, 'tabs-4')">FAILED</button>
+                    </div>
+                    <div class="tabcontent" id="tabs-1">
+                        <span style="font-family:'Blender'">Completed</span>
+                    </div>
+                    <div class="tabcontent" id="tabs-2">
+                        Tab 2
+                    </div>
+                    <div class="tabcontent" id="tabs-3">
+                        Tab 3
+                    </div>
+                    <div class="tabcontent" id="tabs-4">
+                        Status - NOT READY
+                    </div>
+
+
+
+                 </div>
+                 <div class="getchat" style="height:400px;">
+                     <div class="getchathead">
+                        Terminal
+                    </div>
+                    <div id="incomingchat" style="height:250px;background-color:#eee;overflow:scroll;"></div>
+                    <div id="outgoingchat">
+
+                    </div>
+                    <!--<input id="id_user" maxlength="100" name="user" placeholder="Username" type="text" style="height:25px;"></br>-->
+                    <textarea cols="40" id="id_message" maxlength="1000" name="message" rows="9"></textarea>
+                    <button class="chatbutton" id= "chatbuttonsubmit"  type="submit">Execute</button>
+                    <!--<form method = 'POST' >{% csrf_token %}
+                        <div class=wow-form>
+                        {{ formvar }}
+                        </br>
+                     
+                        <button class="button1" type="submit">Send</button>
+            
+                        </div>
+                    </form> -->
+                 </div>
+            </div>
+            <hr>
+            <!--<div class="botright blender" style="color:#fff;">
+                Console
+               
+            </div>-->
+        </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLgvrnuHe1wTJu5kmg7zl_p-5iCv-3rmg&libraries=places"></script>
+<!--<script src="{% static 'scc/rotate.js' %}"></script>-->
+<script src="{% static 'scc/orginfo.js' %}"></script>
+
+
+
+<script>
+///////////////////////
+var map = L.map('image-map', {
+  minZoom: 1,
+  maxZoom: 4,
+  center: [0, 0],
+  zoom: 1,
+  crs: L.CRS.Simple
+});
+
+var w = 2000,
+    h = 1500,
+    url = "{% static 'img/white.png' %}";
+
+var southWest = map.unproject([0, h], map.getMaxZoom()-1);
+var northEast = map.unproject([w, 0], map.getMaxZoom()-1);
+var bounds = new L.LatLngBounds(southWest, northEast);
+
+// add the image overlay, 
+// so that it covers the entire map
+L.imageOverlay(url, bounds).addTo(map);
+
+map.setMaxBounds(bounds);
+
+///////////////////
+
+
+function openTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+
+//chat
+document.addEventListener('DOMContentLoaded', function () { 
+
+    
+     document.getElementById("defaultOpen").click();
+
+    //   var objDiv = document.getElementById("incomingchat");
+    //         objDiv.scrollTop = objDiv.scrollHeight;
+
+});
+
+
+
+/////////
+//leftnav
+var leftnav="";
+  var leftButton1="";
+  leftButton1="";
+  leftButton1+="<button class='button1'>"
+  leftButton1+='<img src='+'"'+"{% static 'img/layers-2x.png' %}"+'"' +'style="width:40px;height:30px;"/>'
+  leftButton1+='<span id="buttonfont">Layers</span>'
+  leftButton1+="</button>"
+
+  leftButton2="";
+  leftButton2+="<button class='button2'>"
+  leftButton2+='<i class="fa fa-map-o fa-3x" aria-hidden="true"></i>'
+  leftButton2+='</br><span id="buttonfont">Full Circuit</span>'
+  leftButton2+="</button>"
+
+  leftButton3="";
+  leftButton3+="<button class='button3'>"
+  leftButton3+='<i class="fa fa-pencil fa-3x" aria-hidden="true"></i>'
+  leftButton3+='</br><span id="buttonfont">Draw Path</span>'
+  leftButton3+="</button>"
+
+  leftnav+="<div class='jcpLeftNav'>";
+  leftnav+=leftButton1;
+  leftnav+=leftButton2;
+  leftnav+=leftButton3;
+  
+  leftnav+="</div>";
+  $(".colz-half").append(leftnav);
+
+var midblueopen=false;
+$('.button2').click(function(){
+    if (midblueopen==false){
+        $('.button2').css({'background-color':'#777'})
+        midblue="";
+        midblue+="<div class='midblue'>";
+        midblue+="<div style='background-color:#fff;width:800px;height:500px;>"
+        // midblue+='<img src='+'"'+"{% static 'scc/midway_blueprint.png' %}"+'"' +'style="width:800px;height:500px;"/>';
+        midblue+="</div>";
+        $(".colz-half").append(midblue);
+        midblueopen=true;
+    }
+    else{
+        $(".midblue").remove();
+        $('.button2').css({'background-color':'#222'})
+        midblueopen=false;
+    }
+});
+
+/////// PATH DRAWING /////
+//////////////////////////
+var midway = L.polygon([
+    [40.44218685969754, -79.94292855262756],   //lat and lng  //topleft
+    [40.44196639630278, -79.9419414997101],                 //topright
+    [40.44176634, -79.9419897] ,                //botright
+    [40.44197047, -79.9430358],                    //botleft       
+]).addTo(map);
+var button3active=false;
+var drawarray=[];
+drawshit();
+$('.button3').click(function(){
+    if (button3active==false){
+        button3active=true;
+        $('.button3').css({'background-color':'#777'})
+    }
+    else{
+        $('.button3').css({'background-color':'#222'})
+        if($('#txtData').is(":visible")){
+            // var newdrawarray="";
+            // while(drawarray.length) newdrawarray.push(drawarray.splice(0,2));
+            $('#txtData')[0].value="["+drawarray+"]";
+      
+            
+        }
+        clearMap();
+        console.log("closing button");
+        button3active=false;
+        drawarray=[];
+    }
+});
+function drawshit(){
+    map.on('click', function(e) {
+        console.log("current button:",button3active)
+        var lat = (e.latlng.lat);
+        var lng = (e.latlng.lng);
+        if (button3active==true){
+            drawarray.push([lat,lng])
+            var firstpolyline = new L.Polyline(drawarray, {
+                color: 'red',
+                weight: 5,
+                opacity: 1,
+                smoothFactor: 1
+            });
+            firstpolyline.addTo(map);
+            console.log(drawarray);
+        }
+        else{
+        console.log("return")
+        return;
+    }
+    });
+
+    
+}
+function clearMap() {
+    for(i in map._layers) {
+        if(map._layers[i]._path != undefined) {
+            try {
+                map.removeLayer(map._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + map._layers[i]);
+            }
+        }
+    }
+}
+
+</script>
+
+
+
+<script>
+////////////////// ///////////////// /////////////////
+
+var sororitylist=["AXO","Alpha Phi","Tri Delta", "DG","Theta","KKG", ];
+var fraternitylist=["AEPi", "Alpha_Sig","DTD","Phi_Delt","SigEp",];
+var independentlist=["APO","ASA","Fringe","KGB","TSA"];
+var blitzlist=["Astro","Math","Sigma_Chi","SDC","AKPsi","CSA??","SOCE??","Kap_Sig"];
+// var independentlist=["CSA","Math","AKPsi","Fringe","ASCE","KGB","Astro","TSA","SDC","ASA"];
+// var blitz=["Sigma_Chi","Kap_Sig"]
+orgselector="";
+orgselector+="<div class='soflow'>"
+orgselector+="<select id='commandorg'>";
+orgselector+="<option selected disabled>Choose a Quantum Gate</option>" 
+
+orgselector+="</select>";
+orgselector+="</div>";
+
+$(".orgs").append(orgselector);
+// $( "#commandorg" ).selectmenu();
+ /////////////////
+
+
+
+commandselector="";
+commandselector+="<div class='soflow'>";
+commandselector+="<select>";
+commandselector+="<option selected disabled>Commands</option>" ;
+
+commandselector+="</div>";
+ $(".orgs").append(commandselector);
+
+
+pathselector="";
+pathselector+="<div class='soflow'>";
+pathselector+="<select id='pathfinder'>";
+pathselector+="<option selected disabled>Path</option>" ;
+pathselector+="<option value='Walk Move'>Path 1</option>";
+pathselector+="<option value='Custom'>Custom</option>";
+pathselector+="</select>";
+pathselector+="</br>";
+pathselector+='<input type="text" id="txtData" style="display:none;" placeholder="Click Draw Button";/>';
+pathselector+="</div>";
+
+
+
+ $(".orgs").append(pathselector);
+$('#pathfinder').change(function() {
+    if($(this).val() == 'Custom')
+        $('#txtData').show();
+    else
+        $('#txtData').hide();
+});
+
+
+
+/////////////
+actionbutton="";
+actionbutton+="<button class='wowbutton' type='submit' name='button1' value='save'>Execute</button>";
+actionbutton+="<button class='panicbutton' type='submit'>STOP</button>";
+$(".orgs").append(actionbutton);
+
+
+
+infoselector="";
+infoselector+="<div class='soflow'>"
+infoselector+="<select id='orgoptions'>";
+infoselector+="<option selected disabled>Quantum Gate Info...</option>" 
+
+infoselector+="</select>";
+infoselector+="</div>";
+ $(".getinfo").append(infoselector);
+
+</script>
+
+<script>
+
+/////////////////////////
+var customOptions =
+        {
+        'maxWidth': '300',
+        'className' : 'custom',
+        'popupAnchor': '[-3, -76]',
+        }
+
+map.on('click', function(e) {
+    // document.getElementById("id_lat").value=e.latlng.lat;
+    // document.getElementById("id_long").value=e.latlng.lng;
+    var lat = (e.latlng.lat);
+    var lng = (e.latlng.lng);
+    // var newLatLng = new L.LatLng(lat, lng);
+    // marker.setLatLng(newLatLng); 
+
+    // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+
+});
+
+///////////// midway //////////
+////////////////////////////////////////
+////////////////////////////////////////
+
+var midway = L.polygon([
+    [40.44217461, -79.9429],   //lat and lng  //topleft
+    [40.44194190, -79.9418878],                 //topright
+    [40.44176634, -79.9419897] ,                //botright
+    [40.44197047, -79.9430358],                    //botleft       
+]);
+// midway.addTo(map);
+
+
+function blueprintUploader(){
+    // var topleft    = L.latLng(40.44219094234618, -79.94294464588167),
+ 	// topright   = L.latLng(40.44194190, -79.9418878),
+  	// bottomleft = L.latLng(40.44197047, -79.9430358);
+
+var topleft    = L.latLng(40.4422807605535, -79.94290709495546),
+ 	topright   = L.latLng(40.44203988418135, -79.9418985843658),
+  	bottomleft = L.latLng(40.44197047, -79.9430358);
+
+    // var imageUrl = "{% static 'scc/blueprint.png' %}",
+    //     imageBounds = [[40.44217461, -79.9429], [40.44176634, -79.9419897]];
+
+    // L.imageOverlay(imageUrl, imageBounds).addTo(map);
+var overlay = L.imageOverlay.rotated("{% static 'scc/blueprint.png' %}", topleft, topright, bottomleft, {
+ 	opacity: 1,
+  	interactive: true,
+  }).addTo(map);
+
+}
+// blueprintUploader();
+
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+
+</script>
+<script>
+
+function initialize() {
+
+var input = document.getElementById('tftextinput');
+var autocomplete = new google.maps.places.Autocomplete(input);
+google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    // console.log("shit");
+    document.getElementById("sbutton").click();
+    
+});
+
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+// google.maps.event.addListener(".pac-item", 'click', function () {
+//     console.log("wow");
+// });
+
+</script>
+<script>
+//search
+var a = document.getElementById('tfnewsearch');
+a.addEventListener('submit',function(e) {
+        e.preventDefault();
+
+        var b = document.getElementById('tftextinput').value;
+        // document.getElementById("id_user").value=b;
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET","http://maps.google.com/maps/api/geocode/json?address="+b,false);
+        xmlhttp.send();
+        var query= JSON.parse(xmlhttp.responseText);
+        var queryresult= query.results[0].geometry.location;
+        var querylat=queryresult.lat;
+        var querylng=queryresult.lng;
+        // document.getElementById("id_longitude").value=querylng;
+        // document.getElementById("id_latitude").value=querylat;
+        map.setView(new L.LatLng(querylat, querylng),19); 
+
+    var locator3=L.circleMarker([queryresult.lat,queryresult.lng],{
+                    color:'#ff0000',
+                    radius:19,
+                });
+    console.log(map.getCenter);
+    var lat = (queryresult.lat);
+    var lng = (queryresult.lng);
+    var newLatLng = new L.LatLng(lat, lng);
+   
+    
+});
+
+
+  buttonTemp="";
+  buttonTemp+="<button class='buttonTemp'>"
+  buttonTemp+='<i class="fa fa-link fa-2x" aria-hidden="true"></i>'
+  buttonTemp+="</div>"
+  $(".location_search_div").append(buttonTemp);
+
+
+
+</script>
+
+
+<script>
+
+
+
+</script>
+
+<script>
+//orginfo
+
+
+
+
+
+
+
+
+var orginfo="";
+orginfo+="<div class='orginfo'>";
+orginfo+='<div class= "wautable" id="tableheader">'
+orginfo+=' <table style="width:100%">'
+orginfo+='<colgroup>'
+orginfo+='<col style="width:40%">'
+orginfo+='<col style="width:60%">'
+orginfo+='</colgroup>'
+orginfo+='<tr>'
+orginfo+='<th>Legend</th>'
+orginfo+='<th>Query</th>'
+orginfo+='</tr>'               
+
+orginfo+='<tr><td>Full Name: </td><td><span id="orgname"></span></br></td></tr>';
+orginfo+='<tr><td>Gate Type: </td><td><span id="orgtype"></span></br></td></tr>';
+orginfo+='<tr><td>Gate Description: </td><td><span id="boothtype"></span></br></td></tr>';
+orginfo+='<tr><td>Number of Deployed Gates: </td><td><span id="boothname"></span></br></td></tr>';
+orginfo+='<tr><td>Locator </td><td><span id="coord"></span></br></td></tr>';
+
+orginfo+='</table>'
+orginfo+='</div>'
+
+// orginfo+='Org Selected: <span id="orgselected"></span></br>';
+// orginfo+='Full Name: <span id="orgname"></span></br>';
+// orginfo+='Org Type: <span id="orgtype"></span></br>';
+// orginfo+='Booth Type: <span id="boothtype"></span></br>';
+// orginfo+='Booth Name: <span id="boothname"></span></br>';
+// orginfo+='Coordinates: <span id="coord"></span></br>';
+// orginfo+="</div>"
+orginfo+="<div id='operators'></div>";
+$(".getinfo").append(orginfo);
+
+$( "#orgoptions" ).change(function() {
+    
+    var orgselected = $('#orgoptions').find(":selected").text();
+    // setView
+    map.setView(orghash[orgselected].coord,19); 
+    // document.getElementById("orgselected").innerHTML=orgselected;
+    document.getElementById("orgname").innerHTML=orghash[orgselected].name;
+    document.getElementById("orgtype").innerHTML=orghash[orgselected].org_type;
+    if (orghash[orgselected].booth_type == "Two Story"){
+        document.getElementById("boothtype").innerHTML="<span style='color:#28fd2f;'>"+orghash[orgselected].booth_type+"</span>";
+    }
+    if (orghash[orgselected].booth_type == "One Story"){
+        document.getElementById("boothtype").innerHTML="<span style='color:#fd28fc;'>"+orghash[orgselected].booth_type+"</span>";
+    }
+    if (orghash[orgselected].booth_type == "Blitz"){
+        document.getElementById("boothtype").innerHTML="<span style='color:#2dfffe;'>"+orghash[orgselected].booth_type+"</span>";
+    }
+    // document.getElementById("boothtype").innerHTML=orghash[orgselected].booth_type;
+    document.getElementById("boothname").innerHTML=orghash[orgselected].booth_name;
+    document.getElementById("coord").innerHTML=orghash[orgselected].coord;
+    // console.log("wow");
+});
+
+$('#chatbuttonsubmit').click(function () {
+    var prev=document.getElementById("incomingchat").innerHTML;
+
+    ajaxChatPost($("#id_user").val(),$("#id_message").val());
+});
+
+
+function ajaxChatPost(user,message){
+    var data={
+        'user':"Dispatch",
+        "message":message,
+    }
+     $.ajax({
+                "type": "POST",
+                "dataType": "json",
+                "url": "/api/chat/create/",
+                "data": data,
+                "success": function(result) {
+                var element = document.getElementById("incomingchat");
+                element.scrollTop = element.scrollHeight;
+                document.getElementById('id_message').value="";
+                },
+            });
+}
+var scrolled = false;
+function updateScroll(){
+    if(!scrolled){
+        var element = document.getElementById("incomingchat");
+        element.scrollTop = element.scrollHeight;
+    }
+
+}
+
+$("#incomingchat").on('scroll', function(){
+    scrolled=true;
+});
+
+
+// $('#incomingchat').bind("DOMSubtreeModified",function(){
+//   alert('changed');
+// });
+$('#incomingchat').bind('contentchanged', function() {
+  // do something after the div content has changed
+  console.log('woo');
+});
+
+
+
+
+
+
+
+
+//////////////////
+</script>
+
+</body>
+</html>
