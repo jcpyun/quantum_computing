@@ -83,9 +83,15 @@
                   </div>
              </div>
              <div id="bottommap" style="height:35%;z-index:1;">
-                  <div class="orgs" >
+                  <div class="quantumelements" >
                      <div class="orghead">
-                        Task
+                        Add Quantum Elements
+                    </div>
+                    <div id="div1"></div>
+                 </div>
+                 <div class="circuitelements" >
+                     <div class="orghead">
+                       Circuit
                     </div>
                     <div id="div1"></div>
                  </div>
@@ -98,7 +104,7 @@
          
             <div class="topright" style="padding-left:10px;">
              
-                 <div class="innerblender" style="padding-top:10px;">Quantum Computing</div>
+                 <div class="innerblender" style="padding-top:10px;">QUANTUM COMPUTING</div>
                 
                  
                  <div class="getinfo">
@@ -174,30 +180,62 @@
 
 <script>
 ///////////////////////
+// var map = L.map('map', {
+// 		crs: L.CRS.Simple,
+// 		minZoom: -3
+// 	});
+
+// 	var bounds = [[-26.5,-25], [1021.5,1023]];
+// 	var image = L.imageOverlay('uqm_map_full.png', bounds).addTo(map);
+
+// 	var sol = L.latLng([ 145, 175 ]);
+// 	L.marker(sol).addTo(map);
+
+// 	map.setView( [70, 120], 1);
+
+
+
 var map = L.map('image-map', {
-  minZoom: 1,
-  maxZoom: 4,
-  center: [0, 0],
-  zoom: 1,
-  crs: L.CRS.Simple
+    crs: L.CRS.Simple,
+  minZoom: -1.5,
+   
+//   maxZoom: 4,
+//   center: [0, 0],
+//   zoom: 1,
+//   crs: L.CRS.Simple
 });
 
 var w = 2000,
     h = 1500,
     url = "{% static 'img/white.png' %}";
 
-var southWest = map.unproject([0, h], map.getMaxZoom()-1);
-var northEast = map.unproject([w, 0], map.getMaxZoom()-1);
-var bounds = new L.LatLngBounds(southWest, northEast);
-
+// var southWest = map.unproject([0, h], map.getMaxZoom()-1);
+// var northEast = map.unproject([w, 0], map.getMaxZoom()-1);
+// var bounds = new L.LatLngBounds(southWest, northEast);
+var bounds = [[0,0], [1000,2000]];
+var image = L.imageOverlay(url, bounds).addTo(map);
+	// var sol = L.latLng([ 145, 175 ]);
+	// L.marker(sol).addTo(map);
+	map.setView( [500,1000], -5);
 // add the image overlay, 
 // so that it covers the entire map
-L.imageOverlay(url, bounds).addTo(map);
+// L.imageOverlay(url, bounds).addTo(map);
 
-map.setMaxBounds(bounds);
+// map.setMaxBounds(bounds);
 
 ///////////////////
+map.on('click', function(e) {
+    // document.getElementById("id_lat").value=e.latlng.lat;
+    // document.getElementById("id_long").value=e.latlng.lng;
+    var lat = (e.latlng.lat);
+    var lng = (e.latlng.lng);
+    console.log(lat,lng);
+    // var newLatLng = new L.LatLng(lat, lng);
+    // marker.setLatLng(newLatLng); 
 
+    // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+
+});
 
 function openTab(evt, tabName) {
     // Declare all variables
@@ -357,21 +395,16 @@ function clearMap() {
 <script>
 ////////////////// ///////////////// /////////////////
 
-var sororitylist=["AXO","Alpha Phi","Tri Delta", "DG","Theta","KKG", ];
-var fraternitylist=["AEPi", "Alpha_Sig","DTD","Phi_Delt","SigEp",];
-var independentlist=["APO","ASA","Fringe","KGB","TSA"];
-var blitzlist=["Astro","Math","Sigma_Chi","SDC","AKPsi","CSA??","SOCE??","Kap_Sig"];
-// var independentlist=["CSA","Math","AKPsi","Fringe","ASCE","KGB","Astro","TSA","SDC","ASA"];
-// var blitz=["Sigma_Chi","Kap_Sig"]
+
 orgselector="";
 orgselector+="<div class='soflow'>"
 orgselector+="<select id='commandorg'>";
-orgselector+="<option selected disabled>Choose a Quantum Gate</option>" 
+orgselector+="<option selected disabled>Choose a Quantum Element</option>" 
 
 orgselector+="</select>";
 orgselector+="</div>";
 
-$(".orgs").append(orgselector);
+$(".quantumelements").append(orgselector);
 // $( "#commandorg" ).selectmenu();
  /////////////////
 
@@ -383,7 +416,7 @@ commandselector+="<select>";
 commandselector+="<option selected disabled>Commands</option>" ;
 
 commandselector+="</div>";
- $(".orgs").append(commandselector);
+ $(".quantumelements").append(commandselector);
 
 
 pathselector="";
@@ -399,7 +432,7 @@ pathselector+="</div>";
 
 
 
- $(".orgs").append(pathselector);
+ $(".quantumelements").append(pathselector);
 $('#pathfinder').change(function() {
     if($(this).val() == 'Custom')
         $('#txtData').show();
@@ -413,7 +446,7 @@ $('#pathfinder').change(function() {
 actionbutton="";
 actionbutton+="<button class='wowbutton' type='submit' name='button1' value='save'>Execute</button>";
 actionbutton+="<button class='panicbutton' type='submit'>STOP</button>";
-$(".orgs").append(actionbutton);
+$(".quantumelements").append(actionbutton);
 
 
 
@@ -438,51 +471,10 @@ var customOptions =
         'popupAnchor': '[-3, -76]',
         }
 
-map.on('click', function(e) {
-    // document.getElementById("id_lat").value=e.latlng.lat;
-    // document.getElementById("id_long").value=e.latlng.lng;
-    var lat = (e.latlng.lat);
-    var lng = (e.latlng.lng);
-    // var newLatLng = new L.LatLng(lat, lng);
-    // marker.setLatLng(newLatLng); 
-
-    // alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
-
-});
-
-///////////// midway //////////
-////////////////////////////////////////
-////////////////////////////////////////
-
-var midway = L.polygon([
-    [40.44217461, -79.9429],   //lat and lng  //topleft
-    [40.44194190, -79.9418878],                 //topright
-    [40.44176634, -79.9419897] ,                //botright
-    [40.44197047, -79.9430358],                    //botleft       
-]);
-// midway.addTo(map);
 
 
-function blueprintUploader(){
-    // var topleft    = L.latLng(40.44219094234618, -79.94294464588167),
- 	// topright   = L.latLng(40.44194190, -79.9418878),
-  	// bottomleft = L.latLng(40.44197047, -79.9430358);
 
-var topleft    = L.latLng(40.4422807605535, -79.94290709495546),
- 	topright   = L.latLng(40.44203988418135, -79.9418985843658),
-  	bottomleft = L.latLng(40.44197047, -79.9430358);
 
-    // var imageUrl = "{% static 'scc/blueprint.png' %}",
-    //     imageBounds = [[40.44217461, -79.9429], [40.44176634, -79.9419897]];
-
-    // L.imageOverlay(imageUrl, imageBounds).addTo(map);
-var overlay = L.imageOverlay.rotated("{% static 'scc/blueprint.png' %}", topleft, topright, bottomleft, {
- 	opacity: 1,
-  	interactive: true,
-  }).addTo(map);
-
-}
-// blueprintUploader();
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -491,54 +483,10 @@ var overlay = L.imageOverlay.rotated("{% static 'scc/blueprint.png' %}", topleft
 </script>
 <script>
 
-function initialize() {
-
-var input = document.getElementById('tftextinput');
-var autocomplete = new google.maps.places.Autocomplete(input);
-google.maps.event.addListener(autocomplete, 'place_changed', function() {
-    // console.log("shit");
-    document.getElementById("sbutton").click();
-    
-});
-
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-// google.maps.event.addListener(".pac-item", 'click', function () {
-//     console.log("wow");
-// });
 
 </script>
 <script>
 //search
-var a = document.getElementById('tfnewsearch');
-a.addEventListener('submit',function(e) {
-        e.preventDefault();
-
-        var b = document.getElementById('tftextinput').value;
-        // document.getElementById("id_user").value=b;
-        xmlhttp=new XMLHttpRequest();
-        xmlhttp.open("GET","http://maps.google.com/maps/api/geocode/json?address="+b,false);
-        xmlhttp.send();
-        var query= JSON.parse(xmlhttp.responseText);
-        var queryresult= query.results[0].geometry.location;
-        var querylat=queryresult.lat;
-        var querylng=queryresult.lng;
-        // document.getElementById("id_longitude").value=querylng;
-        // document.getElementById("id_latitude").value=querylat;
-        map.setView(new L.LatLng(querylat, querylng),19); 
-
-    var locator3=L.circleMarker([queryresult.lat,queryresult.lng],{
-                    color:'#ff0000',
-                    radius:19,
-                });
-    console.log(map.getCenter);
-    var lat = (queryresult.lat);
-    var lng = (queryresult.lng);
-    var newLatLng = new L.LatLng(lat, lng);
-   
-    
-});
 
 
   buttonTemp="";

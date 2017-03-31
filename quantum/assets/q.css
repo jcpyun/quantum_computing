@@ -43,7 +43,7 @@ body {
     color: #ffffff;
 	margin-top:0px;
 }
-.orgs{
+.quantumelements{
     border-color:#ddd;
     background-color:transparent;
     border:1px solid transparent;
@@ -60,6 +60,24 @@ body {
     width:50%;
     float:left;
 }
+.circuitelements{
+    border-color:#ddd;
+    background-color:transparent;
+    border:1px solid transparent;
+    border-radius:4px;
+    box-shadow:0 1px 1px rgba(0,0,0,0.05);
+    padding:10 10 10 10;
+    font-family: "Blender","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 200;
+    letter-spacing: 1px;
+    font-size:15px;
+    color: #aaaaaa;
+    margin-top:0px;
+    height:100%;
+    width:50%;
+    float:left;
+}
+
 .orgspop{
     position:absolute;
      border-color:#ddd;
