@@ -138,33 +138,10 @@
 
 
                  </div>
-                 <div class="getchat" style="height:400px;">
-                     <div class="getchathead">
-                        Terminal
-                    </div>
-                    <div id="incomingchat" style="height:250px;background-color:#eee;overflow:scroll;"></div>
-                    <div id="outgoingchat">
-
-                    </div>
-                    <!--<input id="id_user" maxlength="100" name="user" placeholder="Username" type="text" style="height:25px;"></br>-->
-                    <textarea cols="40" id="id_message" maxlength="1000" name="message" rows="9"></textarea>
-                    <button class="chatbutton" id= "chatbuttonsubmit"  type="submit">Execute</button>
-                    <!--<form method = 'POST' >{% csrf_token %}
-                        <div class=wow-form>
-                        {{ formvar }}
-                        </br>
-                     
-                        <button class="button1" type="submit">Send</button>
-            
-                        </div>
-                    </form> -->
-                 </div>
+                 
             </div>
             <hr>
-            <!--<div class="botright blender" style="color:#fff;">
-                Console
-               
-            </div>-->
+     
         </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
@@ -174,11 +151,114 @@
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLgvrnuHe1wTJu5kmg7zl_p-5iCv-3rmg&libraries=places"></script>
 <!--<script src="{% static 'scc/rotate.js' %}"></script>-->
-<script src="{% static 'scc/orginfo.js' %}"></script>
+
+
 
 
 
 <script>
+var quantumcalculator="";
+quantumcalculator+="<div class='quantumclass'>"
+// quantumcalculator+='<input id="quantuminput1" placeholder="Input Matrices">';
+quantumcalculator+='<select id="qubitoption"><option value="0">0</option><option value="1">1</option></select>';
+quantumcalculator+='<select id="quantumgateoption">'+
+    '<option value="x">Pauli-X</option>'+
+    '<option value="y">Pauli-Y</option>'+
+    '<option value="h">Hadamard</option>'+
+    '</select>';
+
+// quantumcalculator+='<input id="quantuminput2" placeholder="Input Matrices">';
+quantumcalculator+='<button id="exportbutton" onclick="calculateresult()">Submit</button>'
+quantumcalculator+='<div id="quantumoutput" style="color:#000;background-color:#fff;width:200px;height:100px;"></div>'
+quantumcalculator+='</div>'
+$(".circuitelements").append(quantumcalculator);
+var roottwo=Math.sqrt(0.5)
+
+ var paulix= [[0,1],[1,0]]
+ var pauliz=[[1,0],[0,-1]]
+ var hadamard=[[roottwo,roottwo],[roottwo,roottwo*-1]]
+ var output;
+ var qubitzero=[[1],[0]];
+ var qubitone=[[0],[1]]
+function calculateresult(){
+    var e= document.getElementById("qubitoption");
+    var g= document.getElementById("quantumgateoption");
+    // console.log(e.value)
+    // console.log(g.value);
+    // console.log(selected);
+    var bit;
+    var gate;
+    // var b= document.getElementById("quantuminput2").value;
+    if (e.value=="0"){
+        bit = qubitzero
+    }
+    if (e.value=="1"){
+        bit =qubitone
+    }
+    if (g.value=="x"){
+        gate=paulix
+    }
+    if (g.value=="h"){
+        gate=hadamard
+    }
+    if (g.value="z"){
+        gate=pauliz
+    }
+    // console.log(bit);
+  
+//    console.log(paulix);
+    // console.log(bit)
+    // console.log(paulix);
+//    console.log(multiply(paulix,e));
+// console.log(gate,bit,"wow")
+console.log(gate,"gate");
+   console.log(multiply(gate,bit))
+   output=multiply(gate,bit);
+   display(multiply(bit,[[0,1],[1,0]]))
+    // console.log(a,typeof(a));
+    // console.log(b,typeof(b));
+    // $(".circuitelements").append("shit");
+}
+
+var hadamardgate=Math.sqrt(0.5)
+
+function multiply(a, b) {
+  var aNumRows = a.length, aNumCols = a[0].length,
+      bNumRows = b.length, bNumCols = b[0].length,
+      m = new Array(aNumRows);  // initialize array of rows
+  for (var r = 0; r < aNumRows; ++r) {
+    m[r] = new Array(bNumCols); // initialize the current row
+    for (var c = 0; c < bNumCols; ++c) {
+      m[r][c] = 0;             // initialize the current cell
+      for (var i = 0; i < aNumCols; ++i) {
+        m[r][c] += a[r][i] * b[i][c];
+      }
+    }
+  }
+  return m;
+}
+
+function display(m) {
+    // document.getElementById("quantumoutput")=""
+  for (var r = 0; r < m.length; ++r) {
+      var poop='&nbsp;&nbsp;'+m[r].join(' ')+'<br />'
+    //   document.getElementById("quantumoutput").innerhtml=poop;
+    
+  }
+  $("#quantumoutput").append(poop);
+   $("#quantumoutput").append("<hr>");
+}
+
+// var a = [[8, 3], [2, 4], [3, 6]],
+//     b = [[1, 2, 3], [4, 6, 8]];
+// document.write('matrix a:<br />');
+// display(a);
+// document.write('matrix b:<br />');
+// display(b);
+// document.write('a * b =<br />');
+// display(multiply(a, b));
+
+
 ///////////////////////
 // var map = L.map('map', {
 // 		crs: L.CRS.Simple,

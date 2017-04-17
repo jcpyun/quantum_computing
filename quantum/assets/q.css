@@ -640,7 +640,7 @@ circles and stuff
     font-family: Arial, Helvetica, sans-serif !important;
     font-size: 11px !important;
     z-index: 50;
-    background-image: url("cmupd.png");
+
 }
 
 
@@ -906,3 +906,16 @@ div.tab button.active {
 }*/
 
 /*dropup*/
+
+.quantumclass{
+    position:absolute;
+
+    width:100px;
+    height:100px;
+    /*background-color:#f00;*/
+}
+#quantuminput {
+    position:absolute;
+ 
+    z-index:99;
+}
